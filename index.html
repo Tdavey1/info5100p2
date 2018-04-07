@@ -33,7 +33,6 @@ var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) { 
-			console.log(d)
 			return d.name; 
 		}))
 		.force("charge", d3.forceManyBody())
@@ -57,7 +56,18 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			.data(links)
 			.enter().append("line")
 				.attr("stroke-width", function(d) { return lscale(d.value); });
-		console.log(nodes)
+		// console.log(nodes)
+		var label = svg.selectAll(null)
+    		.data(nodes)
+		    .enter()
+		    .append("text")
+		    .text(function (d) { return d.name; })
+		    .style("text-anchor", "middle")
+		    .style("fill", "#555")
+		    .style("font-family", "Arial")
+		    .style("font-size", 12);
+
+
 
 		nodes.forEach(function(d) {
 			d.nodesize = Number(d.nodesize);
@@ -70,19 +80,21 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			.attr("class", "nodes")
 			.selectAll("circle")
 			.data(nodes)
-			.enter().append("circle")
-				.attr("r", function(d) { return rscale(d.nodesize) })
-				.attr("fill", function(d) { return color(d.group); })
-				.call(d3.drag()
-						.on("start", dragstarted)
-						.on("drag", dragged)
-						.on("end", dragended));
+			.enter()
+				.append("circle")
+					.attr("r", function(d) { return rscale(d.nodesize) })
+					.attr("fill", function(d) { return color(d.group); })
+					.call(d3.drag()
+							.on("start", dragstarted)
+							.on("drag", dragged)
+							.on("end", dragended));
 
-		node.append("title")
-			.text(function(d) { return d.name; })
-
-		node.append("title")
-				.text(function(d) { return d.id; });
+		node.append("text")
+      .attr("dx", 12)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.name });
+		// node.append("title")
+		// 	.text(function(d) { return d.name; })
 
 		simulation
 				.nodes(nodes)
@@ -102,8 +114,17 @@ d3.csv("stack_network_links.csv", function(error, links) {
 				.attr("y2", function(d) { return d.target.y; });
 
 			node
-				.attr("cx", function(d) { return d.x; })
-				.attr("cy", function(d) { return d.y; });
+				.attr("cx", function(d) { 
+					var upper = Math.min(width-rscale(d.nodesize), d.x);
+
+					return Math.max(0+rscale(d.nodesize), upper) 
+				})
+				.attr("cy", function(d) { 
+					var upper = Math.min(height-rscale(d.nodesize), d.y);
+
+					return Math.max(0+rscale(d.nodesize), upper) 
+
+				});
 
 		}
 	});
