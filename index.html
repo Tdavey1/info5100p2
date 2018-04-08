@@ -20,6 +20,7 @@
 </head>
 <body>
 	<svg width="1060" height="900"></svg>
+	<svg width="1060" height="900" id="bar-chart"></svg>
 
 	<script type="text/javascript">
 		
@@ -89,42 +90,43 @@ d3.csv("stack_network_links.csv", function(error, links) {
 							.on("drag", dragged)
 							.on("end", dragended));
 
-		node.append("text")
-      .attr("dx", 12)
-      .attr("dy", ".35em")
-      .text(function(d) { return d.name });
-		// node.append("title")
-		// 	.text(function(d) { return d.name; })
+		// click event
+
+
+		// node.append("text")
+  //     .attr("dx", 12)
+  //     .attr("dy", ".35em")
+  //     .text(function(d) { return d.name });
+		node.append("title")
+			.text(function(d) { return d.name; })
 
 		simulation
 				.nodes(nodes)
 				.on("tick", ticked);
 
-	   simulation.force("link")
-	       .links(links);
-
-
+	    simulation.force("link")
+	        .links(links);
 
 
 		function ticked() {
+			node
+				.attr("cx", function(d) { 
+					var upper = Math.min(width-rscale(d.nodesize), d.x);
+					d.x = Math.max(0+rscale(d.nodesize), upper);
+					return d.x;
+				})
+				.attr("cy", function(d) { 
+					var upper = Math.min(height-rscale(d.nodesize), d.y);
+					d.y = Math.max(0+rscale(d.nodesize), upper);
+					return d.y; 
+
+				});
+
 			link
 				.attr("x1", function(d) { return d.source.x; })
 				.attr("y1", function(d) { return d.source.y; })
 				.attr("x2", function(d) { return d.target.x; })
 				.attr("y2", function(d) { return d.target.y; });
-
-			node
-				.attr("cx", function(d) { 
-					var upper = Math.min(width-rscale(d.nodesize), d.x);
-
-					return Math.max(0+rscale(d.nodesize), upper) 
-				})
-				.attr("cy", function(d) { 
-					var upper = Math.min(height-rscale(d.nodesize), d.y);
-
-					return Math.max(0+rscale(d.nodesize), upper) 
-
-				});
 
 		}
 	});
