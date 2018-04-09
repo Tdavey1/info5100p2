@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>project2</title>
+	<title>Project 2</title>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<!-- <script type="text/javascript" src="main.js"></script> -->
 	<style>
@@ -14,6 +14,17 @@
 .nodes circle {
 	stroke: #fff;
 	stroke-width: 1.5px;
+}
+
+text {
+	text-align: center;
+	dominant-baseline: middle;
+}
+
+.node_text {
+  pointer-events: none;
+  font: 10px sans-serif;
+  fill: black;
 }
 
 </style>
@@ -29,6 +40,7 @@ var svg = d3.select("svg"),
 		width = +svg.attr("width"),
 		height = +svg.attr("height");
 
+var linksBySkill;
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -41,6 +53,7 @@ var simulation = d3.forceSimulation()
 
 
 d3.csv("stack_network_links.csv", function(error, links) {
+	
 	if (error) throw error;
 	d3.csv("stack_network_nodes.csv", function(error, nodes){
 		
@@ -58,15 +71,15 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			.enter().append("line")
 				.attr("stroke-width", function(d) { return lscale(d.value); });
 		// console.log(nodes)
-		var label = svg.selectAll(null)
-    		.data(nodes)
-		    .enter()
-		    .append("text")
-		    .text(function (d) { return d.name; })
-		    .style("text-anchor", "middle")
-		    .style("fill", "#555")
-		    .style("font-family", "Arial")
-		    .style("font-size", 12);
+		// var label = svg.selectAll(null)
+  //   		.data(nodes)
+		//     .enter()
+		//     .append("text")
+		//     .text(function (d) { return d.name; })
+		//     .style("text-anchor", "middle")
+		//     .style("fill", "#555")
+		//     .style("font-family", "Arial")
+		//     .style("font-size", 12);
 
 
 
@@ -77,28 +90,37 @@ d3.csv("stack_network_links.csv", function(error, links) {
 		  .domain(d3.extent(nodes, d => d.nodesize))
 		  .range([5, 25]);
 
-		var node = svg.append("g")
-			.attr("class", "nodes")
-			.selectAll("circle")
+		// var node = svg.append("g")
+		// 	.attr("class", "nodes")
+		// 	.selectAll("circle")
+		// 	.data(nodes)
+		// 	.enter()
+		// 		.append("circle")
+		// 			.attr("r", function(d) { return rscale(d.nodesize) })
+		// 			.attr("fill", function(d) { return color(d.group); })
+		// 			.call(d3.drag()
+		// 					.on("start", dragstarted)
+		// 					.on("drag", dragged)
+		// 					.on("end", dragended));
+		var node = svg.selectAll(".nodes")
 			.data(nodes)
-			.enter()
-				.append("circle")
-					.attr("r", function(d) { return rscale(d.nodesize) })
-					.attr("fill", function(d) { return color(d.group); })
-					.call(d3.drag()
-							.on("start", dragstarted)
-							.on("drag", dragged)
-							.on("end", dragended));
+			.enter().append("g")
+			.attr("class", "node")
+			.call(d3.drag()
+				.on("start", dragstarted)
+				.on("drag", dragged)
+				.on("end", dragended));
 
-		// click event
+		node.append("circle")
+			.attr("r", function(d) { return rscale(d.nodesize) })
+			.attr("fill", function(d) { return color(d.group); });
 
-
-		// node.append("text")
-  //     .attr("dx", 12)
-  //     .attr("dy", ".35em")
-  //     .text(function(d) { return d.name });
-		node.append("title")
-			.text(function(d) { return d.name; })
+		node.append("text")
+		    .attr("dx", 0)
+		    .attr("dy", 0)
+		    .text(d => d.name);
+		// node.append("title")
+			// .text(function(d) { return d.name; })
 
 		simulation
 				.nodes(nodes)
@@ -109,18 +131,27 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 
 		function ticked() {
-			node
-				.attr("cx", function(d) { 
-					var upper = Math.min(width-rscale(d.nodesize), d.x);
-					d.x = Math.max(0+rscale(d.nodesize), upper);
-					return d.x;
-				})
-				.attr("cy", function(d) { 
-					var upper = Math.min(height-rscale(d.nodesize), d.y);
-					d.y = Math.max(0+rscale(d.nodesize), upper);
-					return d.y; 
+			// node
+			// 	.attr("cx", function(d) { 
+			// 		var upper = Math.min(width-rscale(d.nodesize), d.x);
+			// 		d.x = Math.max(0+rscale(d.nodesize), upper);
+			// 		return d.x;
+			// 	})
+			// 	.attr("cy", function(d) { 
+			// 		var upper = Math.min(height-rscale(d.nodesize), d.y);
+			// 		d.y = Math.max(0+rscale(d.nodesize), upper);
+			// 		return d.y; 
 
-				});
+			// 	});
+			
+			node.attr("transform", function (d) {
+				var upperx = Math.min(width-rscale(d.nodesize), d.x);
+				d.x = Math.max(0+rscale(d.nodesize), upperx);
+				var uppery = Math.min(height-rscale(d.nodesize), d.y);
+				d.y = Math.max(0+rscale(d.nodesize), uppery);
+
+                return "translate(" + d.x + "," + d.y + ")";
+                });
 
 			link
 				.attr("x1", function(d) { return d.source.x; })
@@ -129,10 +160,147 @@ d3.csv("stack_network_links.csv", function(error, links) {
 				.attr("y2", function(d) { return d.target.y; });
 
 		}
+
+		// Get linked skills by specific skill   
+	    function findSkill(skill) {
+			var linksData = [];
+			links.forEach(function(d) {
+				if (d.source.name == skill) {
+					linksData.push(d);
+				}		
+	    	});
+	    	return linksData;
+	    }	
+
+		// Click event: bar chart
+	    node.on("click", function() {
+			var svgbar = d3.select("#bar-chart");
+			svgbar.selectAll("*").remove();
+
+			var barheight = 20, padding = 30;
+			var nodeData = this.__data__;
+			//console.log(nodeData);
+			var linkedSkills = findSkill(nodeData.name);
+			linkedSkills = linkedSkills.sort(function(a, b) {
+				return d3.descending(a.value, b.value);
+			});
+
+			svgbar.attr("height", barheight*linkedSkills.length*2 + barheight + padding*2);
+			var width = +svgbar.attr("width"),
+				height = +svgbar.attr("height");
+			
+			var yScale = d3.scaleLinear()
+			.domain([1, linkedSkills.length])
+			.range([padding + barheight*3/2, height - padding - barheight*3/2]);
+
+
+			// add circles for linked skills
+			svgbar.selectAll(".linked_skills")
+			.data(linkedSkills).enter()
+			.append("circle")
+			.attr("cx", width*2/5)
+			.attr("cy", (d, i) => yScale(i+1))
+			.attr("r", 5)
+			.attr("fill", "lightgrey");
+
+			// add links for skills
+			svgbar.selectAll(".skill_links")
+			.data(linkedSkills).enter()
+			.append("path")
+			.attr("d", (d, i) => 
+				"M " + width/5 + " " + height/2 +
+				" S " + (width/5+10) + " " + (yScale(i+1)+10) + " " +
+				width*2/5 + " " + yScale(i+1))
+			.attr("stroke-width", 1)
+			.attr("stroke", "lightgrey")
+			.attr("fill", "none");
+
+			// add circle for clicked skill
+			svgbar.append("circle")
+			.attr("cx", width/5)
+			.attr("cy", height/2)
+			.attr("r", 5)
+			.attr("fill", color(nodeData.group));
+
+			svgbar.append("text")
+			.attr("x", width/5)
+			.attr("y", height/2+15)
+			.text(nodeData.name)
+			.attr("fill", "black")
+			.attr("text-anchor", "middle");
+
+			//add bars for lined skills 
+			var barScale = d3.scaleLinear()
+			.domain(d3.extent(links, d => d.value))
+			.range([1, 500]);
+
+			// add 4 quantiles, 25%, 50%, 75%, 100%
+			var values = [];
+			links.forEach(function(d) {
+				values.push(d.value);
+			});
+			//console.log(values);
+			for (var i = 1; i < 5; i++) {
+				
+				var q = d3.quantile(values.sort(), 0.25*i);
+				svgbar.append("line")
+					.attr("x1", width*2/5 + 5+ barScale(q))
+					.attr("y1", padding)
+					.attr("x2", width*2/5 + 5+ barScale(q))
+					.attr("y2", height-padding)
+					.attr("stroke", "lightgrey")
+					.attr("stroke-width", 1)
+					.attr("stroke-dasharray", "2 1");
+
+				svgbar.append("text")
+					.attr("x", width*2/5 + 5+ barScale(q))
+					.attr("y", padding)
+					.text("" + 25*i + "%")
+					.attr("text-anchor", "middle")
+					.attr("font-size", 11)
+					.attr("fill", "darkgrey");
+
+			}
+
+			svgbar.selectAll(".linked_bars")
+			.data(linkedSkills).enter()
+			.append("rect")
+			.attr("x", width*2/5+5)
+			.attr("y", (d, i) => yScale(i+1)-barheight/2)
+			.attr("width", d => barScale(d.value))
+			.attr("height", barheight)
+			.attr("fill", d => color(d.target.group));
+
+			// add texts
+			svgbar.selectAll(".linked_text")
+			.data(linkedSkills).enter()
+			.append("text")
+			.attr("x", width*2/5+10)
+			.attr("y", (d, i) => yScale(i+1))
+			.text(d => d.target.name)
+			.attr("fill", "black");
+
+			// add axis and labels
+			svgbar.append("line")
+					.attr("x1", width*2/5 + 5)
+					.attr("y1", padding + barheight/2)
+					.attr("x2", width*2/5 + 5 + 500)
+					.attr("y2", padding + barheight/2)
+					.attr("stroke", "black")
+					.attr("stroke-width", 1);
+
+			svgbar.append("text")
+					.attr("x", width*2/5 + barScale(d3.quantile(values.sort(), 1) + 20))
+					.attr("y", padding)
+					.text("Correlation value")
+					.attr("text-anchor", "middle")
+					.attr("font-size", 11)
+					.attr("fill", "black");;
+			
+		});
 	});
 
 })
-
 
 
 
