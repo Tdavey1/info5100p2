@@ -102,23 +102,27 @@ d3.csv("stack_network_links.csv", function(error, links) {
 		// 					.on("start", dragstarted)
 		// 					.on("drag", dragged)
 		// 					.on("end", dragended));
+
+		//console.log(nodes[0]);
 		var node = svg.selectAll(".nodes")
 			.data(nodes)
 			.enter().append("g")
-			.attr("class", "node")
+			//.attr("class", "nodes")
+			.attr("id", d => "node_"+ d.name.replace(/\W/g, "_"))
 			.call(d3.drag()
 				.on("start", dragstarted)
 				.on("drag", dragged)
 				.on("end", dragended));
 
 		node.append("circle")
+			.attr("id", d => "node_"+ d.name.replace(/\W/g, "_")+"_circle")
 			.attr("r", function(d) { return rscale(d.nodesize) })
 			.attr("fill", function(d) { return color(d.group); });
 
 		node.append("text")
-		    .attr("dx", 0)
+		    .attr("dx", d => rscale(d.nodesize)+1)
 		    .attr("dy", 0)
-		    .text(d => d.name);
+		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));
 		// node.append("title")
 			// .text(function(d) { return d.name; })
 
@@ -170,22 +174,13 @@ d3.csv("stack_network_links.csv", function(error, links) {
 				}		
 	    	});
 	    	return linksData;
-	    }	
+	    }
 
-		// Click event: bar chart
-	    node.on("click", function() {
-			var svgbar = d3.select("#bar-chart");
-			svgbar.selectAll("*").remove();
+	    var svgbar = d3.select("#bar-chart");
+	    function barChart(nodeData, linkedSkills) {
+	    	var barheight = 20, padding = 30;
 
-			var barheight = 20, padding = 30;
-			var nodeData = this.__data__;
-			//console.log(nodeData);
-			var linkedSkills = findSkill(nodeData.name);
-			linkedSkills = linkedSkills.sort(function(a, b) {
-				return d3.descending(a.value, b.value);
-			});
-
-			svgbar.attr("height", barheight*linkedSkills.length*2 + barheight + padding*2);
+	    	svgbar.attr("height", barheight*linkedSkills.length*2 + barheight + padding*2);
 			var width = +svgbar.attr("width"),
 				height = +svgbar.attr("height");
 			
@@ -295,9 +290,67 @@ d3.csv("stack_network_links.csv", function(error, links) {
 					.text("Correlation value")
 					.attr("text-anchor", "middle")
 					.attr("font-size", 11)
-					.attr("fill", "black");;
+					.attr("fill", "black");
+	    }
+
+		// Click event: bar chart
+	    node.on("click", function() {
+			
+			svgbar.selectAll("*").remove();
+
+			var nodeData = this.__data__;
+			//console.log(nodeData);
+			var linkedSkills = findSkill(nodeData.name);
+			linkedSkills = linkedSkills.sort(function(a, b) {
+				return d3.descending(a.value, b.value);
+			});
+
+			barChart(nodeData, linkedSkills);
 			
 		});
+
+	    // highlight linked node 
+	    function highlight(nodedata) {
+	    	var targetname = nodedata.target.name.replace(/\W/g, "_");
+	    	//console.log(nodedata)
+	    	svg.select("#node_"+targetname)
+	    	.append("circle")
+	    	.transition()
+	    	.delay(100)
+	    	.attr("class", "node_highlight")
+	    	.attr("r", rscale(nodedata.target.nodesize)+1)
+	    	.attr("fill", "none")
+	    	.attr("stroke", color(nodedata.target.group))
+	    	.attr("stroke-opacity", 0.3)
+	    	.attr("stroke-width", 6);
+	    }
+
+		// hover event: hightlight linked skills 
+		node.on("mouseover", function() {
+			var nodeData = this.__data__;
+			//console.log(nodeData);
+			var linkedSkills = findSkill(nodeData.name);
+
+			svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
+	    	.append("circle")
+	    	.transition()
+	    	.delay(100)
+	    	.attr("class", "node_highlight")
+	    	.attr("r", rscale(nodeData.nodesize)+1)
+	    	.attr("fill", "none")
+	    	.attr("stroke", "yellow")
+	    	.attr("stroke-opacity", 0.3)
+	    	.attr("stroke-width", 6);
+
+			linkedSkills.forEach(function(d) {
+				highlight(d);
+			});
+		});
+
+		node.on("mouseout", function() {
+			svg.selectAll(".node_highlight").remove();
+		})
+
 	});
 
 })
