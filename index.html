@@ -45,11 +45,19 @@ var linksBySkill;
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var simulation = d3.forceSimulation()
-		.force("link", d3.forceLink().id(function(d) { 
+	.force("link", d3.forceLink()
+		.id(function(d) { 
 			return d.name; 
-		}))
-		.force("charge", d3.forceManyBody())
-		.force("center", d3.forceCenter(width / 2, height / 2));
+		})
+		.distance(90)
+	)
+	.force("collide", d3.forceCollide()
+		.radius(3)
+		.strength(2)
+		.iterations(3)
+		)
+	.force("charge", d3.forceManyBody())
+	.force("center", d3.forceCenter(width / 2, height / 2));
 
 
 d3.csv("stack_network_links.csv", function(error, links) {
@@ -119,10 +127,10 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			.attr("r", function(d) { return rscale(d.nodesize) })
 			.attr("fill", function(d) { return color(d.group); });
 
-		node.append("text")
+/*		node.append("text")
 		    .attr("dx", d => rscale(d.nodesize)+1)
 		    .attr("dy", 0)
-		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));*/
 		// node.append("title")
 			// .text(function(d) { return d.name; })
 
@@ -323,6 +331,14 @@ d3.csv("stack_network_links.csv", function(error, links) {
 	    	.attr("stroke", color(nodedata.target.group))
 	    	.attr("stroke-opacity", 0.3)
 	    	.attr("stroke-width", 6);
+
+			svg.select("#node_"+targetname)
+			.append("text")
+			.attr("class", "node_text")
+		    .attr("dx", d => rscale(d.nodesize)+1)
+		    .attr("dy", 0)
+		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+	    	
 	    }
 
 		// hover event: hightlight linked skills 
@@ -330,6 +346,15 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			var nodeData = this.__data__;
 			//console.log(nodeData);
 			var linkedSkills = findSkill(nodeData.name);
+
+			console.log(svg.select("#node_"+nodeData.name.replace(/\W/g, "_")))
+
+			svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
+			.append("text")
+			.attr("class", "node_text")
+		    .attr("dx", d => rscale(d.nodesize)+1)
+		    .attr("dy", 0)
+		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));
 
 			svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
 	    	.append("circle")
@@ -340,7 +365,13 @@ d3.csv("stack_network_links.csv", function(error, links) {
 	    	.attr("fill", "none")
 	    	.attr("stroke", "yellow")
 	    	.attr("stroke-opacity", 0.3)
-	    	.attr("stroke-width", 6);
+	    	.attr("stroke-width", 6)
+
+			console.log(nodeData)	    	
+/*	    	nodeData.append("text")
+		    .attr("dx", d => rscale(d.nodesize)+1)
+		    .attr("dy", 0)
+		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));*/
 
 			linkedSkills.forEach(function(d) {
 				highlight(d);
@@ -349,6 +380,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 		node.on("mouseout", function() {
 			svg.selectAll(".node_highlight").remove();
+			svg.selectAll(".node_text").remove();
 		})
 
 	});
