@@ -3,7 +3,9 @@
 <head>
 	<title>Project 2</title>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
-	<!-- <script type="text/javascript" src="main.js"></script> -->
+<!-- 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.js">
+</script>
 	<style>
 
 .links line {
@@ -27,14 +29,136 @@ text {
   fill: black;
 }
 
+/*body {
+	background-color: #2d3a47;
+}*/
+#title{
+	text-align: center;
+}
 </style>
 </head>
 <body>
-	<svg width="1060" height="900"></svg>
+	<h1 id="title">StackOverFlow Tags</h1>
+	<div>
+		<h3>Intro</h3>
+		<p>This is our project.
+		Hover and click to see more.</p>
+	</div>
+	<div style="display: flex;" >
+		<svg  width="1060" height="900"></svg>
+		<div  id="legend-container">
+			<p>legend here</p>
+			<svg width="400" height="500" id="legendsvg">
+		</div>
+	</div>
+
 	<svg width="1060" height="900" id="bar-chart"></svg>
 
 	<script type="text/javascript">
-		
+
+/*
+legend 
+*/
+// var nodeSize = d3.scaleSqrt().domain([20.0219326983115,126.571127129727]).range([10, 35]);
+
+var svglegend = d3.select("#legendsvg");
+
+// svglegend.append("g")
+//   .attr("class", "legendSize")
+//   .attr("transform", "translate(20, 40)");
+
+// var legendSize = d3.legendSize()
+//   .scale(nodeSize)
+//   .shape('circle')
+//   .shapePadding(15)
+//   .labelOffset(20)
+//   .orient('horizontal');
+
+// svglegend.select(".legendSize")
+//   .call(legendSize);
+
+
+// var ordinal = d3.scaleOrdinal()
+//   .domain(["General Programming", "Database/Backend", "Web Server", "Mobile App", "Shell","Front-End","Web","Java related", "Cloud Computing", "Distributed Systems", "Testing", "agile", "perl/regex", "excel"])
+//   .range(d3.schemeCategory20.slice(0,15));
+
+//   svglegend.append("g")
+//   .attr("class", "legendOrdinal")
+//   .attr("transform", "translate(20,20)");
+
+// var legendOrdinal = d3.legendColor()
+//   //.shape("path", d3.legendSymbol().type("triangle-up").size(150)())
+//   .shapePadding(10)
+//   .scale(ordinal);
+
+// svglegend.select(".legendOrdinal")
+//   .call(legendOrdinal);          
+
+
+         
+// var lineSize = d3.scaleLog().domain([20.02193,126.57112]).range([1, 13]);
+
+// svglegend.append("g")
+//   .attr("class", "legendSizeLine")
+//   .attr("transform", "translate(20, 120)");
+
+// var legendSizeLine = d3.legendSize()
+//       .scale(lineSize)
+//       .shape("line")
+//       .orient("horizontal")
+//       //otherwise labels would have displayed:
+//       // 0, 2.5, 5, 10
+//       .labels(["tiny", "small", "medium", "large", "grand"])
+//       .labelWrap(30)
+//       .shapeWidth(40)
+//       .labelAlign("start")
+//       .shapePadding(10);
+
+// svglegend.select(".legendSizeLine")
+//   .call(legendSizeLine);
+
+
+
+
+
+
+
+         
+var lineSize = d3.scaleLinear().domain([20.02193,126.57112]).range([1, 13]);
+
+
+svglegend.append("g")
+  .attr("class", "legendSizeLine")
+  .attr("transform", "translate(0, 20)");
+
+var legendSizeLine = d3.legendSize()
+      .scale(lineSize)
+      .shape("line")
+      .orient("horizontal")
+      //otherwise labels would have displayed:
+      // 0, 2.5, 5, 10
+      .labels(["tiny testing at the beginning",
+        "small", "medium", "large", "grand"])
+      .labelWrap(30)
+      .shapeWidth(40)
+      .labelAlign("start")
+      .shapePadding(10);
+
+svglegend.select(".legendSizeLine")
+  .call(legendSizeLine);
+         
+
+
+
+
+
+
+var svg = d3.select("svg");
+
+
+
+          
+
 
 var svg = d3.select("svg"),
 		width = +svg.attr("width"),
@@ -51,11 +175,7 @@ var simulation = d3.forceSimulation()
 		})
 		.distance(90)
 	)
-	.force("collide", d3.forceCollide()
-		.radius(3)
-		.strength(2)
-		.iterations(3)
-		)
+	
 	.force("charge", d3.forceManyBody())
 	.force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -68,9 +188,9 @@ d3.csv("stack_network_links.csv", function(error, links) {
 		links.forEach(function(d) {
 			d.value = Number(d.value);
 		})
-		var lscale = d3.scaleSqrt()
+		var lscale = d3.scaleLog()
 		  .domain(d3.extent(links, d => d.value))
-		  .range([3, 10]);
+		  .range([1, 13]);
 
 		var link = svg.append("g")
 			.attr("class", "links")
@@ -96,7 +216,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 		})
 		var rscale = d3.scaleSqrt()
 		  .domain(d3.extent(nodes, d => d.nodesize))
-		  .range([5, 25]);
+		  .range([10, 35]);
 
 		// var node = svg.append("g")
 		// 	.attr("class", "nodes")
@@ -136,6 +256,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 		simulation
 				.nodes(nodes)
+				.force("collide", d3.forceCollide(d => rscale(d.nodesize + 100)))
 				.on("tick", ticked);
 
 	    simulation.force("link")
