@@ -6,7 +6,29 @@
 <!-- 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.js">
 </script>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+
 	<style>
+
+.legendOrdinal {
+	border: 2px black solid;
+}
+
+#legend-container {
+	font-size: 13px;
+	margin-left: 30px;
+	overflow:visible;
+}
+.legendSizeLine line{
+	stroke:#999;
+}
+.legendSize circle{
+	fill:#999;
+}
 
 .links line {
 	stroke: #999;
@@ -25,111 +47,111 @@ text {
 
 .node_text {
   pointer-events: none;
-  font: 10px sans-serif;
+  font: 17px sans-serif;
   fill: black;
+  z-index: 2;
+}
+
+.hidden {
+	display: none;
 }
 
 /*body {
 	background-color: #2d3a47;
 }*/
-#title{
+.title{
 	text-align: center;
+	margin: 0;
+	font-size: 40px;
+	font-weight: bold;
+
 }
 </style>
 </head>
 <body>
-	<h1 id="title">StackOverFlow Tags</h1>
-	<div>
-		<h3>Intro</h3>
-		<p>This is our project.
-		Hover and click to see more.</p>
-	</div>
-	<div style="display: flex;" >
-		<svg  width="1060" height="900"></svg>
-		<div  id="legend-container">
-			<p>legend here</p>
-			<svg width="400" height="500" id="legendsvg">
-		</div>
+	<div style="display:flex; align-items: flex-end; justify-content: center;">
+		<p class="title">What do</p>
+		<img style="height: 100px" src="logo.png">
+		<p class="title">Tags Tell Us?</p>
 	</div>
 
-	<svg width="1060" height="900" id="bar-chart"></svg>
+	<div>
+		
+		<h3 style="text-align: center;color: #79736d">
+			StackOverFlow tags are used to describe the topic of the questions. 
+			<br>
+			<i>Tag correlations</i> can represent the relationships between different technologies.
+			<br>
+			Number of tags can indicate how popular the technology is.
+		</h3>
+	</div>
+
+	<div style="display: flex;" >
+		<div>
+			<p style="text-align: center; font-weight: bold; color: #f48024;font-size: 25px"> Hover and click the nodes to see more! </p>
+			<svg id="container" width="1250" height="900"></svg>
+		</div>
+		<div  id="legend-container">
+			<svg width="360" height="900" id="legendsvg">
+		</div>
+	</div>
+			<h3 class='hidden' id="bar-chart-header" style="text-align: center;color: #79736d">
+			Technology relationships based on tag correlations.
+		</h3>
+	<svg width="1500" height="900" id="bar-chart"></svg>
 
 	<script type="text/javascript">
 
 /*
 legend 
 */
-// var nodeSize = d3.scaleSqrt().domain([20.0219326983115,126.571127129727]).range([10, 35]);
+var nodeSize = d3.scaleSqrt().domain([20.0219326983115,126.571127129727]).range([10, 35]);
 
 var svglegend = d3.select("#legendsvg");
 
-// svglegend.append("g")
-//   .attr("class", "legendSize")
-//   .attr("transform", "translate(20, 40)");
+svglegend.append("g")
+  .attr("class", "legendSize")
+  .attr("transform", "translate(20, 30)");
 
-// var legendSize = d3.legendSize()
-//   .scale(nodeSize)
-//   .shape('circle')
-//   .shapePadding(15)
-//   .labelOffset(20)
-//   .orient('horizontal');
+var legendSize = d3.legendSize()
+  .scale(nodeSize)
+  .shape('circle')
+  .shapePadding(25)
+  .labels(["Less Use", "", "", "", "More Use"])
+  .labelOffset(20)
+  .title("Frequency of Use")
+  .orient('horizontal');
 
-// svglegend.select(".legendSize")
-//   .call(legendSize);
-
-
-// var ordinal = d3.scaleOrdinal()
-//   .domain(["General Programming", "Database/Backend", "Web Server", "Mobile App", "Shell","Front-End","Web","Java related", "Cloud Computing", "Distributed Systems", "Testing", "agile", "perl/regex", "excel"])
-//   .range(d3.schemeCategory20.slice(0,15));
-
-//   svglegend.append("g")
-//   .attr("class", "legendOrdinal")
-//   .attr("transform", "translate(20,20)");
-
-// var legendOrdinal = d3.legendColor()
-//   //.shape("path", d3.legendSymbol().type("triangle-up").size(150)())
-//   .shapePadding(10)
-//   .scale(ordinal);
-
-// svglegend.select(".legendOrdinal")
-//   .call(legendOrdinal);          
+svglegend.select(".legendSize")
+  .call(legendSize);
 
 
-         
-// var lineSize = d3.scaleLog().domain([20.02193,126.57112]).range([1, 13]);
+var ordinal = d3.scaleOrdinal()
+  .domain(["General Programming", "Database/Backend", "Web Server", 
+  	"Mobile App", "Shell","Front-End","Web","Java related", 
+  	"Cloud Computing", "Distributed Systems", "Testing", "agile", 
+  	"perl/regex", "excel"])
+  .range(d3.schemeCategory20.slice(0,15));
 
-// svglegend.append("g")
-//   .attr("class", "legendSizeLine")
-//   .attr("transform", "translate(20, 120)");
+  svglegend.append("g")
+  .attr("class", "legendOrdinal")
+  .attr("transform", "translate(20,280)");
 
-// var legendSizeLine = d3.legendSize()
-//       .scale(lineSize)
-//       .shape("line")
-//       .orient("horizontal")
-//       //otherwise labels would have displayed:
-//       // 0, 2.5, 5, 10
-//       .labels(["tiny", "small", "medium", "large", "grand"])
-//       .labelWrap(30)
-//       .shapeWidth(40)
-//       .labelAlign("start")
-//       .shapePadding(10);
+var legendOrdinal = d3.legendColor()
+  //.shape("path", d3.legendSymbol().type("triangle-up").size(150)())
+  .shapePadding(10)
+  .scale(ordinal);
 
-// svglegend.select(".legendSizeLine")
-//   .call(legendSizeLine);
-
-
-
-
-
+svglegend.select(".legendOrdinal")
+  .call(legendOrdinal);          
 
 
          
-var lineSize = d3.scaleLinear().domain([20.02193,126.57112]).range([1, 13]);
-
+var lineSize = d3.scaleLog().domain([20.02193,126.57112]).range([1, 13]);
 
 svglegend.append("g")
   .attr("class", "legendSizeLine")
-  .attr("transform", "translate(0, 20)");
+  .attr("transform", "translate(20, 180)");
 
 var legendSizeLine = d3.legendSize()
       .scale(lineSize)
@@ -137,30 +159,19 @@ var legendSizeLine = d3.legendSize()
       .orient("horizontal")
       //otherwise labels would have displayed:
       // 0, 2.5, 5, 10
-      .labels(["tiny testing at the beginning",
-        "small", "medium", "large", "grand"])
+      .labels(["Smaller Correlation", "", "", "", "Larger Correlation"])
       .labelWrap(30)
-      .shapeWidth(40)
+      .shapeWidth(55)
+      .title("Degree of Relationship")
       .labelAlign("start")
       .shapePadding(10);
 
 svglegend.select(".legendSizeLine")
   .call(legendSizeLine);
-         
 
+var svg = d3.select("#container");
 
-
-
-
-
-var svg = d3.select("svg");
-
-
-
-          
-
-
-var svg = d3.select("svg"),
+var svg = d3.select("#container"),
 		width = +svg.attr("width"),
 		height = +svg.attr("height");
 
@@ -235,7 +246,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 		var node = svg.selectAll(".nodes")
 			.data(nodes)
 			.enter().append("g")
-			//.attr("class", "nodes")
+			// .attr("class", "nodes")
 			.attr("id", d => "node_"+ d.name.replace(/\W/g, "_"))
 			.call(d3.drag()
 				.on("start", dragstarted)
@@ -247,13 +258,6 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			.attr("r", function(d) { return rscale(d.nodesize) })
 			.attr("fill", function(d) { return color(d.group); });
 
-/*		node.append("text")
-		    .attr("dx", d => rscale(d.nodesize)+1)
-		    .attr("dy", 0)
-		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));*/
-		// node.append("title")
-			// .text(function(d) { return d.name; })
-
 		simulation
 				.nodes(nodes)
 				.force("collide", d3.forceCollide(d => rscale(d.nodesize + 100)))
@@ -264,18 +268,6 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 
 		function ticked() {
-			// node
-			// 	.attr("cx", function(d) { 
-			// 		var upper = Math.min(width-rscale(d.nodesize), d.x);
-			// 		d.x = Math.max(0+rscale(d.nodesize), upper);
-			// 		return d.x;
-			// 	})
-			// 	.attr("cy", function(d) { 
-			// 		var upper = Math.min(height-rscale(d.nodesize), d.y);
-			// 		d.y = Math.max(0+rscale(d.nodesize), upper);
-			// 		return d.y; 
-
-			// 	});
 			
 			node.attr("transform", function (d) {
 				var upperx = Math.min(width-rscale(d.nodesize), d.x);
@@ -307,7 +299,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 	    var svgbar = d3.select("#bar-chart");
 	    function barChart(nodeData, linkedSkills) {
-	    	var barheight = 20, padding = 30;
+	    	var barheight = 30, padding = 30;
 
 	    	svgbar.attr("height", barheight*linkedSkills.length*2 + barheight + padding*2);
 			var width = +svgbar.attr("width"),
@@ -356,7 +348,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			//add bars for lined skills 
 			var barScale = d3.scaleLinear()
 			.domain(d3.extent(links, d => d.value))
-			.range([1, 500]);
+			.range([1, 1000]);
 
 			// add 4 quantiles, 25%, 50%, 75%, 100%
 			var values = [];
@@ -408,13 +400,13 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			svgbar.append("line")
 					.attr("x1", width*2/5 + 5)
 					.attr("y1", padding + barheight/2)
-					.attr("x2", width*2/5 + 5 + 500)
+					.attr("x2", width*2/5 + 5 + 1000)
 					.attr("y2", padding + barheight/2)
 					.attr("stroke", "black")
 					.attr("stroke-width", 1);
 
 			svgbar.append("text")
-					.attr("x", width*2/5 + barScale(d3.quantile(values.sort(), 1) + 20))
+					.attr("x", width*2/5 + barScale(d3.quantile(values.sort(), 1) +10))
 					.attr("y", padding)
 					.text("Correlation value")
 					.attr("text-anchor", "middle")
@@ -427,6 +419,8 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			
 			svgbar.selectAll("*").remove();
 
+
+
 			var nodeData = this.__data__;
 			//console.log(nodeData);
 			var linkedSkills = findSkill(nodeData.name);
@@ -436,21 +430,27 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 			barChart(nodeData, linkedSkills);
 			
+			$('html, body').animate({
+				scrollTop: $('#bar-chart').offset().top
+
+			}, 200)
+
+			$('#bar-chart-header').removeClass('hidden');
+
 		});
 
 	    // highlight linked node 
 	    function highlight(nodedata) {
 	    	var targetname = nodedata.target.name.replace(/\W/g, "_");
-	    	//console.log(nodedata)
 	    	svg.select("#node_"+targetname)
 	    	.append("circle")
 	    	.transition()
 	    	.delay(100)
 	    	.attr("class", "node_highlight")
-	    	.attr("r", rscale(nodedata.target.nodesize)+1)
+	    	.attr("r", rscale(nodedata.target.nodesize)+2)
 	    	.attr("fill", "none")
 	    	.attr("stroke", color(nodedata.target.group))
-	    	.attr("stroke-opacity", 0.3)
+	    	.attr("stroke-opacity", 0.5)
 	    	.attr("stroke-width", 6);
 
 			svg.select("#node_"+targetname)
@@ -463,19 +463,17 @@ d3.csv("stack_network_links.csv", function(error, links) {
 	    }
 
 		// hover event: hightlight linked skills 
-		node.on("mouseover", function() {
+		node.on("mouseenter", function() {
 			var nodeData = this.__data__;
 			//console.log(nodeData);
 			var linkedSkills = findSkill(nodeData.name);
 
-			console.log(svg.select("#node_"+nodeData.name.replace(/\W/g, "_")))
+			// console.log(svg.select("#node_"+nodeData.name.replace(/\W/g, "_")))
 
-			svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
-			.append("text")
-			.attr("class", "node_text")
-		    .attr("dx", d => rscale(d.nodesize)+1)
-		    .attr("dy", 0)
-		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+
+			// console.log(nodeData)
+
+			// console.log(linkedSkills)
 
 			svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
 	    	.append("circle")
@@ -485,10 +483,16 @@ d3.csv("stack_network_links.csv", function(error, links) {
 	    	.attr("r", rscale(nodeData.nodesize)+1)
 	    	.attr("fill", "none")
 	    	.attr("stroke", "yellow")
-	    	.attr("stroke-opacity", 0.3)
-	    	.attr("stroke-width", 6)
+	    	.attr("stroke-opacity", 0.5)
+	    	.attr("stroke-width", 3)
 
-			console.log(nodeData)	    	
+			svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
+			.append("text")
+			.attr("class", "node_text")
+		    .attr("dx", d => rscale(d.nodesize)+1)
+		    .attr("dy", 0)
+		    .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+    	
 /*	    	nodeData.append("text")
 		    .attr("dx", d => rscale(d.nodesize)+1)
 		    .attr("dy", 0)
