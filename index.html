@@ -88,16 +88,19 @@ text {
 
 	<div style="display: flex;" >
 		<div>
-			<p style="text-align: center; font-weight: bold; color: #f48024;font-size: 25px"> Hover and click the nodes to see more! </p>
+			<p style="text-align: center; font-weight: bold; color: #f48024;font-size: 20px"> Hover and click the nodes to see more! </p>
 			<svg id="container" width="1250" height="900"></svg>
 		</div>
 		<div  id="legend-container">
 			<svg width="360" height="900" id="legendsvg">
 		</div>
 	</div>
-			<h3 class='hidden' id="bar-chart-header" style="text-align: center;color: #79736d">
+	<div class='hidden' id="bar-chart-header">
+		<h3 style="text-align: center;color: #79736d">
 			Technology relationships based on tag correlations.
 		</h3>
+		<p style="text-align: center; font-weight: bold; color: #f48024;font-size: 20"> Click the bars to switch relationships! </p>
+	</div>
 	<svg width="1500" height="900" id="bar-chart"></svg>
 
 	<script type="text/javascript">
@@ -297,7 +300,20 @@ d3.csv("stack_network_links.csv", function(error, links) {
 	    	return linksData;
 	    }
 
+	    // Get skill node by element id 
+	    function findNode(skillid) {
+			var skillnode;
+			nodes.forEach(function(d) {
+				if (skillid == d.name.replace(/\W/g, "_") ) {
+					skillnode = d;
+				}	
+	    	});
+	    	return skillnode;
+	    }
+
 	    var svgbar = d3.select("#bar-chart");
+	    //var bar = svgbar.selectAll("linked_bars"); 
+
 	    function barChart(nodeData, linkedSkills) {
 	    	var barheight = 30, padding = 30;
 
@@ -341,7 +357,7 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			svgbar.append("text")
 			.attr("x", width/5)
 			.attr("y", height/2+15)
-			.text(nodeData.name)
+			.text(nodeData.name[0].toUpperCase()+nodeData.name.substring(1))
 			.attr("fill", "black")
 			.attr("text-anchor", "middle");
 
@@ -378,9 +394,13 @@ d3.csv("stack_network_links.csv", function(error, links) {
 
 			}
 
-			svgbar.selectAll(".linked_bars")
+			var bar = svgbar.selectAll(".linked_bars")
 			.data(linkedSkills).enter()
-			.append("rect")
+			.append("g")
+			.attr("class", "linked_bars")
+			.attr("id", d => "bar_" + d.target.name.replace(/\W/g, "_"));
+
+			bar.append("rect")
 			.attr("x", width*2/5+5)
 			.attr("y", (d, i) => yScale(i+1)-barheight/2)
 			.attr("width", d => barScale(d.value))
@@ -388,13 +408,35 @@ d3.csv("stack_network_links.csv", function(error, links) {
 			.attr("fill", d => color(d.target.group));
 
 			// add texts
-			svgbar.selectAll(".linked_text")
-			.data(linkedSkills).enter()
+			bar
 			.append("text")
+			.attr("class", "linked_text")
 			.attr("x", width*2/5+10)
 			.attr("y", (d, i) => yScale(i+1))
-			.text(d => d.target.name)
+			.text(d => d.target.name[0].toUpperCase()+d.target.name.substring(1))
 			.attr("fill", "black");
+
+			// click event on bars: switch the links
+			bar.on("click", function() {
+				var thisskill = d3.select(this).attr("id").substring(4);
+				var thisnode = findNode(thisskill);
+				var thislinkedSkills = findSkill(thisnode.name);
+				thislinkedSkills = thislinkedSkills.sort(function(a, b) {
+					return d3.descending(a.value, b.value);
+				});
+				svgbar.selectAll("*").remove();
+				barChart(thisnode, thislinkedSkills);
+			});
+
+			// hover event on bars: hightlight
+			bar.on("mouseenter", function() {
+				var thisbar = d3.select(this);
+				thisbar.attr("fill-opacity", 0.7);
+			});
+
+			bar.on("mouseout", function() {
+				svgbar.selectAll("rect").attr("fill-opacity", 1);
+			});
 
 			// add axis and labels
 			svgbar.append("line")
@@ -414,12 +456,13 @@ d3.csv("stack_network_links.csv", function(error, links) {
 					.attr("fill", "black");
 	    }
 
+
+	    
+
 		// Click event: bar chart
 	    node.on("click", function() {
 			
 			svgbar.selectAll("*").remove();
-
-
 
 			var nodeData = this.__data__;
 			//console.log(nodeData);
