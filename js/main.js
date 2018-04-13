@@ -1,23 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function jqName(name) {
   return name.replace( /(:|\+|\.|\[|\]|,|=|@|#)/g, "\\$1" );
 }
@@ -105,7 +85,6 @@ var simulation = d3.forceSimulation()
     .id(function(d) { 
       return d.name; 
     })
-    .distance(90)
   )
   
   .force("charge", d3.forceManyBody())
@@ -423,14 +402,10 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         svg.select("#node_"+targetname)
         .append("text")
         .attr("class", "node_text")
-          .attr("dx", d => rscale(d.nodesize)+1)
-          .attr("dy", 0)
-          .text(d => d.name[0].toUpperCase()+d.name.substring(1));
-        
+        .attr("dx", d => rscale(d.nodesize)+1)
+        .attr("dy", 0)
+        .text(d => d.name[0].toUpperCase()+d.name.substring(1));
 
-        console.log("=================")
-        console.log(jqName(nodedata.source.name))
-        console.log(jqName(nodedata.target.name))
         $("." + jqName(nodedata.source.name) + "." + jqName(nodedata.target.name)).attr("stroke", "#f48024");
 
       }
