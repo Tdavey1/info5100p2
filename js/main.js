@@ -1,3 +1,27 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function jqName(name) {
+  return name.replace( /(:|\+|\.|\[|\]|,|=|@|#)/g, "\\$1" );
+}
+
 var nodeSize = d3.scaleSqrt().domain([20.0219326983115,126.571127129727]).range([10, 35]);
 
 var svglegend = d3.select("#legendsvg");
@@ -19,25 +43,29 @@ svglegend.select(".legendSize")
   .call(legendSize);
 
 
-var ordinal = d3.scaleOrdinal()
-  .domain(["General Programming", "Database/Backend", "Web Server", 
-    "Mobile App", "Shell","Front-End","Web","Java related", 
-    "Cloud Computing", "Distributed Systems", "Testing", "agile", 
-    "perl/regex", "excel"])
-  .range(d3.schemeCategory20.slice(0,15));
+// var ordinal = d3.scaleOrdinal()
+//   .domain(["General Programming", "Database/Backend", "Web Server", 
+//     "Mobile App", "Shell","Front-End","Web","Java related", 
+//     "Cloud Computing", "Distributed Systems", "Testing", "agile", 
+//     "perl/regex", "excel"])
+//   .range(d3.schemeCategory20.slice(0,15));
 
-  svglegend.append("g")
-  .attr("class", "legendOrdinal")
-  .attr("transform", "translate(20,280)");
+//   svglegend.append("g")
+//   .attr("class", "legendOrdinal")
+//   .attr("transform", "translate(20,280)");
 
-var legendOrdinal = d3.legendColor()
-  //.shape("path", d3.legendSymbol().type("triangle-up").size(150)())
-  .shapePadding(10)
-  .scale(ordinal);
+// var legendOrdinal = d3.legendColor()
+//   //.shape("path", d3.legendSymbol().type("triangle-up").size(150)())
+//   .shapePadding(10)
+//   .scale(ordinal);
 
-svglegend.select(".legendOrdinal")
-  .call(legendOrdinal);          
+// svglegend.select(".legendOrdinal")
+//   .call(legendOrdinal);          
 
+// svglegend.append("text")
+//   .attr("transform", "translate(20,280)")
+//   .wrap("<a xlink:href \"https://en.wiktionary.org/wiki/walktrap\"></a>")
+//   .text("Different colors represent different groups, as specified by the dataset. The group is calculated via the walktrap algorithm.")
 
          
 var lineSize = d3.scaleLog().domain([20.02193,126.57112]).range([1, 13]);
@@ -101,7 +129,11 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       .selectAll("line")
       .data(links)
       .enter().append("line")
-        .attr("stroke-width", function(d) { return lscale(d.value); });
+        .attr("stroke-width", function(d) { return lscale(d.value); })
+        .attr("stroke", "#999")
+        .attr("class", function(d) {
+          return d.source + " " + d.target;
+        })
     // console.log(nodes)
     // var label = svg.selectAll(null)
   //      .data(nodes)
@@ -374,6 +406,8 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
 
       // highlight linked node 
       function highlight(nodedata) {
+
+
         var targetname = nodedata.target.name.replace(/\W/g, "_");
         svg.select("#node_"+targetname)
         .append("circle")
@@ -386,13 +420,19 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         .attr("stroke-opacity", 0.5)
         .attr("stroke-width", 6);
 
-      svg.select("#node_"+targetname)
-      .append("text")
-      .attr("class", "node_text")
-        .attr("dx", d => rscale(d.nodesize)+1)
-        .attr("dy", 0)
-        .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+        svg.select("#node_"+targetname)
+        .append("text")
+        .attr("class", "node_text")
+          .attr("dx", d => rscale(d.nodesize)+1)
+          .attr("dy", 0)
+          .text(d => d.name[0].toUpperCase()+d.name.substring(1));
         
+
+        console.log("=================")
+        console.log(jqName(nodedata.source.name))
+        console.log(jqName(nodedata.target.name))
+        $("." + jqName(nodedata.source.name) + "." + jqName(nodedata.target.name)).attr("stroke", "#f48024");
+
       }
 
     // hover event: hightlight linked skills 
@@ -407,6 +447,10 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       // console.log(nodeData)
 
       // console.log(linkedSkills)
+
+      console.log($(".c++.python"))
+      console.log($(".c++"))
+      console.log($(".linux.python"))
 
       svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
         .append("circle")
@@ -437,6 +481,14 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
     });
 
     node.on("mouseout", function() {
+      var nodeData = this.__data__;
+      var linkedSkills = findSkill(nodeData.name);
+      linkedSkills.forEach(function(d) {
+        $("." + jqName(d.source.name) + "." + jqName(d.target.name)).attr("stroke", "#999");
+      });
+
+
+      
       svg.selectAll(".node_highlight").remove();
       svg.selectAll(".node_text").remove();
     })
