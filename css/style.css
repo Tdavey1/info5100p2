@@ -1,4 +1,94 @@
-path.arc {
+#title-container {
+  display:flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#logo {
+  height: 100px;
+}
+
+#description {
+  text-align: center;color: #79736d
+}
+
+#info-container {
+  display: flex;
+  justify-content: center;
+}
+
+.instruction {
+  text-align: center; 
+  font-weight: bold; 
+  color: #f48024;
+  font-size: 20px
+}
+
+#bar-chart-title {
+  text-align: center;
+  color: #79736d;
+  font-size: 24px;
+}
+
+#bar-chart-container {
+  text-align: center;
+}
+
+.legendOrdinal {
+  border: 2px black solid;
+}
+
+#legend-container {
+  font-size: 13px;
+  margin-left: 30px;
+  overflow:visible;
+}
+.legendSizeLine line{
+  stroke:#999;
+}
+.legendSize circle{
+  fill:#999;
+}
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  text-align: center;
+  dominant-baseline: middle;
+}
+
+.node_text {
+  pointer-events: none;
+  font: 17px sans-serif;
+  fill: black;
+  z-index: 2;
+}
+
+.hidden {
+  display: none;
+}
+
+/*body {
+  background-color: #2d3a47;
+}*/
+.title{
+  text-align: center;
+  margin: 0;
+  font-size: 40px;
+  font-weight: bold;
+
+}
+
+
+/*path.arc {
   cursor: move;
   fill: #fff;
 }
@@ -37,4 +127,4 @@ path.arc {
 
 .link.target {
   stroke: #2ca02c;
-}
+}*/
