@@ -491,11 +491,120 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       
       svg.selectAll(".node_highlight").remove();
       svg.selectAll(".node_text").remove();
-    })
+    });
 
+    // Group tags: word cloud
+    var svgtag = d3.select("#tag-group-svg");
+    //var svgword = d3.select("#word-cloud-svg");
+    var groupNum = Array.from(Array(14), (x, i) => String(i + 1));
+
+    // find skill arrays by group
+    function findNameByGroup(group) {
+      var skills = [];
+      nodes.forEach(function(d) {
+        if (d.group == group) {
+          skills.push({"name": d.name,
+            "nodesize": d.nodesize,
+            "group": d.group});
+        }
+      });
+      return skills;
+    }
+
+    // draw word cloud
+    var wScale = d3.scaleLinear().domain([1, 23]).range([550, 1000]);
+    var hScale = d3.scaleLinear().domain([1, 23]).range([300, 600]);
+    function drawWordCloud(skillNodes) {
+        svgtag.selectAll("text").remove();
+
+        var fontScale = d3.scaleLinear()
+        .domain(d3.extent(skillNodes, d=>d.nodesize))
+        .range([20,100]);
+        //var cloudPadding = 50;
+        
+        var width = svgtag.attr("width");
+        var height = hScale(skillNodes.length);
+        svgtag.attr("height", height);
+
+        d3.layout.cloud().size([wScale(skillNodes.length), height])
+          .timeInterval(20)
+          .words(skillNodes)
+          .font("Impact")
+          .padding(1)
+          .fontSize(d => fontScale(+d.nodesize))
+          .text(d => d.name[0].toUpperCase()+d.name.substring(1))
+          //.rotate(function() { return ~~(Math.random() * 2) * 90; })
+          .rotate(function() { return 0; })
+          .on("end", draw)
+          .start();
+
+        function draw(words) {
+          var wordcloud = svgtag.append("g")
+          .attr("class", "word-cloud")
+          .attr("transform", "translate(" + [width/2, height/2+50] + ")");
+           
+          //console.log(words)   
+          wordcloud.selectAll("text")
+            .data(words)
+            .enter().append("text")
+              .style("font-size", d => fontScale(d.nodesize) + "px")
+              .style("font-family", "Impact")
+              .style("fill", d => color(d.group))
+              .attr("text-anchor", "middle")
+              .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function(d) { return d.name; });
+        }
+
+        d3.layout.cloud().stop();
+    }
+
+    // draw the color legend 
+    var colorlegend = svgtag.append("g")
+    .attr("class", "color-legend")
+    .attr("transform", "translate(" + [svgtag.attr("width")/2-200, 20] + ")");
+
+    var radius = 10;
+    var cxScale = d3.scaleLinear().domain([1, 14]).range([radius/2, 400-radius/2]);
+    
+    var colorcircle = colorlegend.selectAll("circle")
+    .data(groupNum).enter()
+    .append("circle")
+    .attr("id", d => "group"+d)
+    .attr("cx", d => cxScale(Number(d)))
+    .attr("cy", radius/2)
+    .attr("r", radius)
+    .attr("fill", d => color(d));
+    
+    //initialize as javascript group
+    drawWordCloud(findNameByGroup("6"));
+    d3.select("#group6")
+      .attr("stroke", "yellow")
+      .attr("stroke-width", 2)
+      .attr("stroke-opacity", 0.7);
+
+    colorcircle.on("click", function() {
+      colorcircle.attr("stroke", "none");
+
+      d3.select("#group"+this.__data__)
+      .attr("stroke", "yellow")
+      .attr("stroke-width", 3)
+      .attr("stroke-opacity", 0.7);
+
+      drawWordCloud(findNameByGroup(this.__data__));
+    });
+
+    colorcircle.on("mouseenter", function() {
+      d3.select("#group"+this.__data__).attr("fill-opacity", 0.7);
+    });
+
+    colorcircle.on("mouseout", function() {
+      d3.selectAll("circle").attr("fill-opacity", 1);
+    });
   });
 
-})
+});
 
 
 
