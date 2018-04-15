@@ -22,15 +22,21 @@
 		</h3>
 	</div>
 
+	
+
 	<div id="info-container" >
 		<div>
 			<p class="instruction"> Hover and click the nodes to see more! </p>
 			<svg id="container" width="1250" height="900"></svg>
 		</div>
 		<div  id="legend-container">
-			<p>Different colors represent different groups, as specified by the dataset. The group is calculated via the <a target="_blank" href="https://en.wiktionary.org/wiki/walktrap">walktrap algorithm.</a></p>
-			<svg width="360" height="900" id="legendsvg">
+			<svg width="360" height="300" id="legendsvg"></svg>
+			<br>Different colors represent different groups, as specified by the dataset. </br>
+			<br> The group is calculated via the <a target="_blank" href="https://en.wiktionary.org/wiki/walktrap">walktrap algorithm.</a></br>
+			<br> Click to see group info!</br>
+			<svg id="tag-group-svg" width="360" height="40"></svg>
 		</div>
+
 
 	</div>
 	<div id="bar-chart-container">
@@ -40,7 +46,9 @@
 			</h3>
 			<p class="instruction"> Click the bars to switch relationships! </p>
 		</div>
+		<div id="tag-group-container">
 		<svg width="1500" height="900" id="bar-chart"></svg>
+		</div>	
 	</div>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -50,6 +58,7 @@
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 <script type="text/javascript" src="js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.4/d3.layout.cloud.js"></script>
 
 </body>
 </html>

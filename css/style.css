@@ -59,9 +59,14 @@
   stroke-width: 1.5px;
 }
 
-text {
+#bar-chart-container text {
   text-align: center;
   dominant-baseline: middle;
+}
+
+#tag-group-container {
+  display: flex;
+  justify-content: center;
 }
 
 .node_text {

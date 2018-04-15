@@ -512,14 +512,14 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
     }
 
     // draw word cloud
-    var wScale = d3.scaleLinear().domain([1, 23]).range([550, 1000]);
-    var hScale = d3.scaleLinear().domain([1, 23]).range([300, 600]);
+    var wScale = d3.scaleLinear().domain([1, 23]).range([200, 360]);
+    var hScale = d3.scaleLinear().domain([1, 23]).range([400, 600]);
     function drawWordCloud(skillNodes) {
         svgtag.selectAll("text").remove();
 
         var fontScale = d3.scaleLinear()
         .domain(d3.extent(skillNodes, d=>d.nodesize))
-        .range([20,100]);
+        .range([18, 64]);
         //var cloudPadding = 50;
         
         var width = svgtag.attr("width");
@@ -541,7 +541,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         function draw(words) {
           var wordcloud = svgtag.append("g")
           .attr("class", "word-cloud")
-          .attr("transform", "translate(" + [width/2, height/2+50] + ")");
+          .attr("transform", "translate(" + [width/2, height/2+20] + ")");
            
           //console.log(words)   
           wordcloud.selectAll("text")
@@ -563,10 +563,10 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
     // draw the color legend 
     var colorlegend = svgtag.append("g")
     .attr("class", "color-legend")
-    .attr("transform", "translate(" + [svgtag.attr("width")/2-200, 20] + ")");
+    .attr("transform", "translate(" + [svgtag.attr("width")/2-200, 50] + ")");
 
-    var radius = 10;
-    var cxScale = d3.scaleLinear().domain([1, 14]).range([radius/2, 400-radius/2]);
+    var radius = 8;
+    var cxScale = d3.scaleLinear().domain([1, 14]).range([radius/2, 360-radius/2]);
     
     var colorcircle = colorlegend.selectAll("circle")
     .data(groupNum).enter()
@@ -584,6 +584,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       .attr("stroke-width", 2)
       .attr("stroke-opacity", 0.7);
 
+    //mouse event: click -> draw word cloud, highlight stroke
     colorcircle.on("click", function() {
       colorcircle.attr("stroke", "none");
 
