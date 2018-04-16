@@ -23,30 +23,6 @@ svglegend.select(".legendSize")
   .call(legendSize);
 
 
-// var ordinal = d3.scaleOrdinal()
-//   .domain(["General Programming", "Database/Backend", "Web Server", 
-//     "Mobile App", "Shell","Front-End","Web","Java related", 
-//     "Cloud Computing", "Distributed Systems", "Testing", "agile", 
-//     "perl/regex", "excel"])
-//   .range(d3.schemeCategory20.slice(0,15));
-
-//   svglegend.append("g")
-//   .attr("class", "legendOrdinal")
-//   .attr("transform", "translate(20,280)");
-
-// var legendOrdinal = d3.legendColor()
-//   //.shape("path", d3.legendSymbol().type("triangle-up").size(150)())
-//   .shapePadding(10)
-//   .scale(ordinal);
-
-// svglegend.select(".legendOrdinal")
-//   .call(legendOrdinal);          
-
-// svglegend.append("text")
-//   .attr("transform", "translate(20,280)")
-//   .wrap("<a xlink:href \"https://en.wiktionary.org/wiki/walktrap\"></a>")
-//   .text("Different colors represent different groups, as specified by the dataset. The group is calculated via the walktrap algorithm.")
-
          
 var lineSize = d3.scaleLog().domain([20.02193,126.57112]).range([1, 13]);
 
@@ -113,18 +89,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         .attr("class", function(d) {
           return d.source + " " + d.target;
         })
-    // console.log(nodes)
-    // var label = svg.selectAll(null)
-  //      .data(nodes)
-    //     .enter()
-    //     .append("text")
-    //     .text(function (d) { return d.name; })
-    //     .style("text-anchor", "middle")
-    //     .style("fill", "#555")
-    //     .style("font-family", "Arial")
-    //     .style("font-size", 12);
-
-
 
     nodes.forEach(function(d) {
       d.nodesize = Number(d.nodesize);
@@ -133,24 +97,10 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       .domain(d3.extent(nodes, d => d.nodesize))
       .range([10, 35]);
 
-    // var node = svg.append("g")
-    //  .attr("class", "nodes")
-    //  .selectAll("circle")
-    //  .data(nodes)
-    //  .enter()
-    //    .append("circle")
-    //      .attr("r", function(d) { return rscale(d.nodesize) })
-    //      .attr("fill", function(d) { return color(d.group); })
-    //      .call(d3.drag()
-    //          .on("start", dragstarted)
-    //          .on("drag", dragged)
-    //          .on("end", dragended));
 
-    //console.log(nodes[0]);
     var node = svg.selectAll(".nodes")
       .data(nodes)
       .enter().append("g")
-      // .attr("class", "nodes")
       .attr("id", d => "node_"+ d.name.replace(/\W/g, "_"))
       .call(d3.drag()
         .on("start", dragstarted)
@@ -212,7 +162,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       }
 
       var svgbar = d3.select("#bar-chart");
-      //var bar = svgbar.selectAll("linked_bars"); 
 
       function barChart(nodeData, linkedSkills) {
         var barheight = 30, padding = 30;
@@ -271,7 +220,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       links.forEach(function(d) {
         values.push(d.value);
       });
-      //console.log(values);
       for (var i = 1; i < 5; i++) {
         
         var q = d3.quantile(values.sort(), 0.25*i);
@@ -365,7 +313,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       svgbar.selectAll("*").remove();
 
       var nodeData = this.__data__;
-      //console.log(nodeData);
       var linkedSkills = findSkill(nodeData.name);
       linkedSkills = linkedSkills.sort(function(a, b) {
         return d3.descending(a.value, b.value);
@@ -414,19 +361,9 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
     // hover event: hightlight linked skills 
     node.on("mouseenter", function() {
       var nodeData = this.__data__;
-      //console.log(nodeData);
       var linkedSkills = findSkill(nodeData.name);
 
-      // console.log(svg.select("#node_"+nodeData.name.replace(/\W/g, "_")))
 
-
-      // console.log(nodeData)
-
-      // console.log(linkedSkills)
-
-      console.log($(".c++.python"))
-      console.log($(".c++"))
-      console.log($(".linux.python"))
 
       svg.select("#node_"+nodeData.name.replace(/\W/g, "_"))
         .append("circle")
@@ -496,7 +433,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         var fontScale = d3.scaleLinear()
         .domain(d3.extent(skillNodes, d=>d.nodesize))
         .range([15, 40]);
-        //var cloudPadding = 50;
         
         var width = svgtag.attr("width");
         var height = hScale(skillNodes.length);
@@ -509,7 +445,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
           .padding(1)
           .fontSize(d => fontScale(+d.nodesize))
           .text(d => d.name[0].toUpperCase()+d.name.substring(1))
-          //.rotate(function() { return ~~(Math.random() * 2) * 90; })
           .rotate(function() { return 0; })
           .on("end", draw)
           .start();
@@ -519,7 +454,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
           .attr("class", "word-cloud")
           .attr("transform", "translate(" + [width/2, height/2.5] + ")");
            
-          //console.log(words)   
           wordcloud.selectAll("text")
             .data(words)
             .enter().append("text")
