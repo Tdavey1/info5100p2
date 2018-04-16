@@ -542,7 +542,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         function draw(words) {
           var wordcloud = svgtag.append("g")
           .attr("class", "word-cloud")
-          .attr("transform", "translate(" + [width/2, height/2+20] + ")");
+          .attr("transform", "translate(" + [width/2, height/2.5] + ")");
            
           //console.log(words)   
           wordcloud.selectAll("text")
@@ -564,7 +564,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
     // draw the color legend 
     var colorlegend = svgtag.append("g")
     .attr("class", "color-legend")
-    .attr("transform", "translate(" + [svgtag.attr("width")/2-200, 50] + ")");
+    .attr("transform", "translate(" + [svgtag.attr("width")/2-200, 10] + ")");
 
     var radius = 8;
     var cxScale = d3.scaleLinear().domain([1, 14]).range([radius/2, 360-radius/2]);
