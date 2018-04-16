@@ -191,7 +191,6 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       simulation.force("link")
           .links(links);
 
-
     function ticked() {
       
       node.attr("transform", function (d) {
@@ -404,6 +403,8 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
 
     });
 
+
+
       // highlight linked node 
       function highlight(nodedata) {
 
@@ -519,7 +520,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
 
         var fontScale = d3.scaleLinear()
         .domain(d3.extent(skillNodes, d=>d.nodesize))
-        .range([18, 64]);
+        .range([15, 40]);
         //var cloudPadding = 50;
         
         var width = svgtag.attr("width");
