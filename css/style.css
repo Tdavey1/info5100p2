@@ -9,7 +9,9 @@
 }
 
 #description {
-  text-align: center;color: #79736d
+  text-align: center;
+  color: #79736d;
+  font-family: 'Open Sans', sans-serif;
 }
 
 #info-container {
@@ -21,7 +23,8 @@
   text-align: center; 
   font-weight: bold; 
   color: #f48024;
-  font-size: 20px
+  font-size: 20px;
+  font-family: 'Open Sans', sans-serif;
 }
 
 
@@ -29,21 +32,27 @@
   text-align: center;
   color: #79736d;
   font-size: 24px;
+  font-family: 'Open Sans', sans-serif;
 }
 
 #bar-chart-container {
   text-align: center;
 }
 
+
+
 .legendOrdinal {
   border: 2px black solid;
 }
 
 #legend-container {
-  font-size: 13px;
+  font-size: 16px;
   margin-left: 30px;
   overflow:visible;
+  font-family: 'Open Sans', sans-serif;
 }
+
+
 .legendSizeLine line{
   stroke:#999;
 }
@@ -64,10 +73,11 @@
 #bar-chart-container text {
   text-align: center;
   dominant-baseline: middle;
+  font-family: 'Open Sans', sans-serif;
 }
 
 #tag-group-container {
-  display: flex;
+  /*display: flex;*/
   justify-content: center;
 }
 
@@ -89,5 +99,5 @@
   margin: 0;
   font-size: 40px;
   font-weight: bold;
-
+  font-family: Arimo, sans-serif;
 }

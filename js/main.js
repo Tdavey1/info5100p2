@@ -206,7 +206,8 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       svgbar.append("text")
       .attr("x", width/5)
       .attr("y", height/2+15)
-      .text(nodeData.name[0].toUpperCase()+nodeData.name.substring(1))
+      //.text(nodeData.name[0].toUpperCase()+nodeData.name.substring(1))
+      .text(nodeData.name)
       .attr("fill", "black")
       .attr("text-anchor", "middle");
 
@@ -237,7 +238,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
           .attr("y", padding)
           .text("" + 25*i + "%")
           .attr("text-anchor", "middle")
-          .attr("font-size", 11)
+          .attr("font-size", 16)
           .attr("fill", "darkgrey");
 
       }
@@ -261,7 +262,9 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       .attr("class", "linked_text")
       .attr("x", width*2/5+10)
       .attr("y", (d, i) => yScale(i+1))
-      .text(d => d.target.name[0].toUpperCase()+d.target.name.substring(1))
+      //.text(d => d.target.name[0].toUpperCase()+d.target.name.substring(1))
+      .text(d => d.target.name)
+      .attr("font-size", 18)
       .attr("fill", "black");
 
       // click event on bars: switch the links
@@ -296,11 +299,11 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
           .attr("stroke-width", 1);
 
       svgbar.append("text")
-          .attr("x", width*2/5 + barScale(d3.quantile(values.sort(), 1) +10))
+          .attr("x", width*2/5 + barScale(d3.quantile(values.sort(), 1)+12))
           .attr("y", padding)
           .text("Correlation value")
           .attr("text-anchor", "middle")
-          .attr("font-size", 11)
+          .attr("font-size", 14)
           .attr("fill", "black");
       }
 
@@ -352,7 +355,8 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         .attr("class", "node_text")
         .attr("dx", d => rscale(d.nodesize)+1)
         .attr("dy", 0)
-        .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+        //.text(d => d.name[0].toUpperCase()+d.name.substring(1));
+        .text(d => d.name);
 
         $("." + jqName(nodedata.source.name) + "." + jqName(nodedata.target.name)).attr("stroke", "#f48024");
 
@@ -381,7 +385,8 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
       .attr("class", "node_text")
         .attr("dx", d => rscale(d.nodesize)+1)
         .attr("dy", 0)
-        .text(d => d.name[0].toUpperCase()+d.name.substring(1));
+        //.text(d => d.name[0].toUpperCase()+d.name.substring(1));
+        .text(d => d.name);
       
 /*        nodeData.append("text")
         .attr("dx", d => rscale(d.nodesize)+1)
@@ -441,10 +446,10 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
         d3.layout.cloud().size([wScale(skillNodes.length), height])
           .timeInterval(20)
           .words(skillNodes)
-          .font("Impact")
+          .font("Oswald")
           .padding(1)
           .fontSize(d => fontScale(+d.nodesize))
-          .text(d => d.name[0].toUpperCase()+d.name.substring(1))
+          .text(d => d.name)
           .rotate(function() { return 0; })
           .on("end", draw)
           .start();
@@ -458,7 +463,7 @@ d3.csv("../data/stack_network_links.csv", function(error, links) {
             .data(words)
             .enter().append("text")
               .style("font-size", d => fontScale(d.nodesize) + "px")
-              .style("font-family", "Impact")
+              .style("font-family", "Oswald")
               .style("fill", d => color(d.group))
               .attr("text-anchor", "middle")
               .attr("transform", function(d) {
